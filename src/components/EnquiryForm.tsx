@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MessageCircle } from "lucide-react";
-import { buildWhatsAppLink, DEFAULT_ENQUIRY_MESSAGE } from "@/data/travel";
+import { DEFAULT_ENQUIRY_MESSAGE } from "@/data/travel";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(80),
@@ -38,21 +38,29 @@ export function EnquiryForm({ defaultDestination = "", packageTitle }: Props) {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
     const parsed = schema.safeParse(form);
+
     if (!parsed.success) {
       setError(parsed.error.issues[0]?.message ?? "Please review the form");
       return;
     }
+
     const intro = packageTitle
       ? `${DEFAULT_ENQUIRY_MESSAGE}\n\n*Package:* ${packageTitle}`
       : `Hello Tripze Travels, I'd like to plan a trip to *${parsed.data.destination}*.`;
+
     const msg = `${intro}
 
 *Name:* ${parsed.data.name}
 *Phone:* ${parsed.data.phone}
 *Destination:* ${parsed.data.destination}
 ${parsed.data.message ? `*Message:* ${parsed.data.message}` : ""}`;
-    window.open(buildWhatsAppLink(msg), "_blank", "noopener,noreferrer");
+
+    // ✅ FIXED WhatsApp link (no freeze)
+    const url = `https://wa.me/917807804069?text=${encodeURIComponent(msg)}`;
+
+    window.open(url, "_blank");
   };
 
   return (
