@@ -24,8 +24,8 @@ function DefaultErrorComponent({ error, reset }: { error: Error; reset: () => vo
         <div className="mt-6 flex gap-3 justify-center">
           <button
             onClick={() => {
-              router.invalidate();
-              reset();
+              // ❌ REMOVE router.invalidate()
+              reset(); // ✅ only reset (safe)
             }}
             className="px-4 py-2 bg-primary text-white rounded"
           >
@@ -42,5 +42,6 @@ export const getRouter = () => {
     routeTree,
     context: {},
     defaultErrorComponent: DefaultErrorComponent,
+    defaultPreload: "intent", // ✅ ADD (performance + stability)
   });
 };
